@@ -23,19 +23,19 @@ def buildIndex(folderName):
         # Check if path is a file or a folder
         if path.is_file():
             # If path is a file, turn HTML into readable text and call tokenize function
-            with open(path, "r") as file:
-                readable = bs(file.read(), "lxml").get_text()
+            with open(path, "r", errors ='ignore') as file:
+                readable = bs(file, "lxml").get_text()
                 tokens = tokenize(readable)
             # For each token in the tokens dictionary returned by tokenize
-            for token in tokens:
-                # If token is not in index
-                if token not in index:
-                    # Add token to index
-                    index[token] = [Posting.Posting(path, tokens[token])]
-                # If token is in index
-                else:
-                    # Add posting to postings list of token in index
-                    index[token].append(Posting.Posting(path, tokens[token]))
+                for token in tokens:
+                    # If token is not in index
+                    if token not in index:
+                        # Add token to index
+                        index[token] = [Posting.Posting(path, tokens[token])]
+                    # If token is in index
+                    else:
+                        # Add posting to postings list of token in index
+                        index[token].append(Posting.Posting(path, tokens[token]))
         # If path is a folder, recursively call buildIndex
         else:
             index = mergeIndex(index, buildIndex(path))
@@ -69,9 +69,9 @@ def tokenize(path):
     tokens = defaultdict(int)
     # Open file for reading
     try:
-            newtokens = re.findall(r'[a-zA-Z0-9]+', readable)   # get all tokens
-            for newtoken in newtokens:
-                tokens[newtoken.lower()] += 1               # treat token as lowercase, increment its count
+        newtokens = re.findall(r'[a-zA-Z0-9]+', path)   # get all tokens
+        for newtoken in newtokens:
+            tokens[newtoken.lower()] += 1               # treat token as lowercase, increment its count
     except:
         return tokens   # Return tokens
 
