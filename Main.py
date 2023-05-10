@@ -1,6 +1,8 @@
 import Posting
 import pathlib
 import re
+import json
+from bs4 import BeautifulSoup as bs
 from collections import defaultdict
 
 
@@ -14,27 +16,27 @@ def buildIndex(folderName):
     # Create an empty dictionary
     index = {}
     # Get a list of all files and folders in the folder
-    files = pathlib.Path(folderName)
-
+    paths = pathlib.Path(folderName)
+    
     # Loop over all files and folders
-    for file in files.iterdir():
+    for path in paths.iterdir():
         # Check if path is a file or a folder
-        if file.is_file():
+        if path.is_file():
             # If path is a file, call tokenize function
-            tokens = tokenize(file)
+            tokens = tokenize(path)
             # For each token in the tokens dictionary returned by tokenize
             for token in tokens:
                 # If token is not in index
                 if token not in index:
                     # Add token to index
-                    index[token] = [Posting.Posting(file, tokens[token])]
+                    index[token] = [Posting.Posting(path, tokens[token])]
                 # If token is in index
                 else:
                     # Add posting to postings list of token in index
-                    index[token].append(Posting.Posting(file, tokens[token]))
+                    index[token].append(Posting.Posting(path, tokens[token]))
         # If path is a folder, recursively call buildIndex
         else:
-            index = mergeIndex(index, buildIndex(file))
+            index = mergeIndex(index, buildIndex(path))
 
     # Return index  
     return index
@@ -65,11 +67,25 @@ def tokenize(path):
     tokens = defaultdict(int)
     # Open file for reading
     try:
-        with open(path, "r"):
-            newtokens = re.findall(r'[a-zA-Z0-9]+', file)   # get all tokens
+        with open(path, "r") as file:
+            readable = bs(file.read(), "lxml").get_text()  # get text from file
+            newtokens = re.findall(r'[a-zA-Z0-9]+', readable)   # get all tokens
             for newtoken in newtokens:
                 tokens[newtoken.lower()] += 1               # treat token as lowercase, increment its count
     except:
         return tokens   # Return tokens
 
+    return tokens       # Return tokens
+
+
+# A method that builds an inverted index, and dump the data into a new json file.
+def buildIndexJSON(folderName):
+    with open('data/tokenIndex.json', 'w') as file:
+        # Call buildIndex to get inverted index
+        index = buildIndex(folderName)
+        # Write inverted index to a json file
+        json.dump(index, file, indent=4)
+
 # Make calls to build inverted index, and dump data into a json file
+if __name__ == "__main__":
+    buildIndexJSON("/Users/jerrychen/Desktop/UCI/Spring23/INF141/Assignment3/DEV")
