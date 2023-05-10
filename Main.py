@@ -17,13 +17,15 @@ def buildIndex(folderName):
     index = {}
     # Get a list of all files and folders in the folder
     paths = pathlib.Path(folderName)
-    
+
     # Loop over all files and folders
     for path in paths.iterdir():
         # Check if path is a file or a folder
         if path.is_file():
-            # If path is a file, call tokenize function
-            tokens = tokenize(path)
+            # If path is a file, turn HTML into readable text and call tokenize function
+            with open(path, "r") as file:
+                readable = bs(file.read(), "lxml").get_text()
+                tokens = tokenize(readable)
             # For each token in the tokens dictionary returned by tokenize
             for token in tokens:
                 # If token is not in index
@@ -67,8 +69,6 @@ def tokenize(path):
     tokens = defaultdict(int)
     # Open file for reading
     try:
-        with open(path, "r") as file:
-            readable = bs(file.read(), "lxml").get_text()  # get text from file
             newtokens = re.findall(r'[a-zA-Z0-9]+', readable)   # get all tokens
             for newtoken in newtokens:
                 tokens[newtoken.lower()] += 1               # treat token as lowercase, increment its count
