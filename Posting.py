@@ -2,11 +2,11 @@ import json
 
 # Write a class that represents a posting in the inverted index.
 # A posting is a document ID and a term frequency for a particular
-# token in a document. 
-class Posting:
+# token in a document. Inherent from the dict class so that it can
+# be converted to JSON.
+class Posting(dict):
     def __init__(self, docID, termFreq):
-        self.docID = docID
-        self.termFreq = termFreq
+        dict.__init__(self, docID=str(docID), termFreq=str(termFreq))
 
     def getDocID(self):
         return self.docID
@@ -24,12 +24,4 @@ class Posting:
         return str(self.docID) + " " + str(self.termFreq)
     
 
-    # Make it JSON serializable
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)
-
-# test whether a posting object can be converted to json
-p = Posting(1, 2)
-print(p.toJSON())
 
