@@ -66,7 +66,7 @@ def writeIndex(path, index):
                 data[sorted_index[i][0]] = sorted_index[i][1]
             # if token is in the file, append the posting to the token's posting list
             else:
-                data[sorted_index[i][0]].append(sorted_index[i][1])
+                data[sorted_index[i][0]] += (sorted_index[i][1])
 
             json.dump(data, file, indent=4)
         
