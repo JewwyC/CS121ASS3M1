@@ -28,7 +28,7 @@ def buildIndex(folderName):
                 tokens = tokenize(readable)
             # For each token in the tokens dictionary returned by tokenize
                 for token in tokens:
-                    current_post = Posting.Posting(path, tokens[token]) # Create a posting
+                    current_post = Posting.Posting(path.name, tokens[token]) # Create a posting with the document ID and term frequency
                     # If token is not in index
                     if token not in index:
                         # Add token to index
@@ -156,4 +156,9 @@ def buildIndexJSON(folderName):
 
 # Make calls to build inverted index, and dump data into a json file
 if __name__ == "__main__":
+    # Create empty json files for each letter
+    for i in range(0, 26):
+        with open("data/" + chr(ord('a') + i) + ".json", "w") as file:
+            json.dump({}, file, indent=4)
+
     buildIndex("/Users/jerrychen/Desktop/UCI/Spring23/INF141/Assignment3/DEV")
