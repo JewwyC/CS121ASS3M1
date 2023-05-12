@@ -46,40 +46,31 @@ def buildIndex(folderName):
 
 # Write a method that writes an inverted index to multiple
 # json files based on the first letter of the token. 
-
 def writeIndex(path, index):
     # Sort the tokens alphabetically
     sorted_index = sorted(index.items(), key=lambda x: x[0])
 
     # Dump the data into json files based on the first letter of the token
     for i in range(0, 26):
-        # turn posting object into json
-        #for j in range(0, len(sorted_index[i][1])):
-        #    sorted_index[i][1][j] = sorted_index[i][1][j].toJSON()
+        # read file and check whether the token is in the file
+        with open("data/" + chr(ord('a') + i) + ".json", "r") as file:
+            # check whether the file is empty
+            if file.read(1):
+                file.seek(0)
+                data = json.load(file)
+            else:
+                data = {}
         with open("data/" + chr(ord('a') + i) + ".json", "w") as file:
-            json.dump(sorted_index[i], file)
+            # if token is not in the file, add the token and its posting to the file
+            if sorted_index[i][0] not in data:
+                data[sorted_index[i][0]] = sorted_index[i][1]
+            # if token is in the file, append the posting to the token's posting list
+            else:
+                data[sorted_index[i][0]].append(sorted_index[i][1])
 
-    # Return index  
-    return index
-
-    
-# Write a method that merges two inverted indexes. The indexes
-# are dictionaries of term -> postings list. The postings list
-# is a list of Posting objects. Each posting object represents
-# a document ID and a term frequency for a particular token.
-def mergeIndex(index1, index2):
-    # For each token in index2
-    for token in index2:
-        # If token is not in index1
-        if token not in index1:
-            # Add token to index1
-            index1[token] = index2[token]
-        # If token is in index1
-        else:
-            # Add postings from index2 to postings list of token in index1
-            index1[token] += index2[token]
-    # Return merged index
-    return index1
+            json.dump(data, file, indent=4)
+        
+        
 
 
 # Tokenize function that takes a file path as input and returns
@@ -97,6 +88,25 @@ def tokenize(path):
 
     return tokens       # Return tokens
 
+'''    
+# Write a method that merges two inverted indexes. The indexes
+# are dictionaries of term -> postings list. The postings list
+# is a list of Posting objects. Each posting object represents
+# a document ID and a term frequency for a particular token.
+def mergeIndex(index1, index2):
+    # For each token in index2
+    for token in index2:
+        # If token is not in index1
+        if token not in index1:
+            # Add token to index1
+            index1[token] = index2[token]
+        # If token is in index1
+        else:
+            # Add postings from index2 to postings list of token in index1
+            index1[token] += index2[token]
+    # Return merged index
+    return index1
+'''
 '''
 # A method that builds an inverted index, sort the tokens
 # alphabetically, and dump the data into json files based
