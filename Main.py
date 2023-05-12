@@ -43,7 +43,24 @@ def buildIndex(folderName):
         else:
             buildIndex(path)
 
+def writeIndex(path, index):
+    with open ("data/index.json", "r") as file:
+        if file.read(1):
+            file.seek(0)
+            data = json.load(file)
+        else:
+            data = {}
+    with open("data/index.json", "w") as file:
+        for token in index:
+            if token not in data:
+                data[token] = index[token]
+            else:
+                data[token] += index[token]
+        
+        json.dump(index, file, indent=4)
 
+
+'''
 # Write a method that writes an inverted index to multiple
 # json files based on the first letter of the token. 
 def writeIndex(path, index):
@@ -69,7 +86,7 @@ def writeIndex(path, index):
                 data[sorted_index[i][0]] += (sorted_index[i][1])
 
             json.dump(data, file, indent=4)
-        
+'''        
         
 
 
@@ -157,8 +174,10 @@ def buildIndexJSON(folderName):
 # Make calls to build inverted index, and dump data into a json file
 if __name__ == "__main__":
     # Create empty json files for each letter
-    for i in range(0, 26):
-        with open("data/" + chr(ord('a') + i) + ".json", "w") as file:
-            json.dump({}, file, indent=4)
+    #for i in range(0, 26):
+    #    with open("data/" + chr(ord('a') + i) + ".json", "w") as file:
+    #        json.dump({}, file, indent=4)
+    with open("data/index.json", "w") as file:
+        json.dump({}, file, indent=4)
 
     buildIndex("/Users/jerrychen/Desktop/UCI/Spring23/INF141/Assignment3/DEV")
