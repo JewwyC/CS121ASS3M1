@@ -13,36 +13,33 @@ from collections import defaultdict
 # a document ID and a term frequency for a particular token.
 # The inverted index is returned.
 def buildIndex(folderName):
-    # Create an empty dictionary
-    index = {}
-    # Get a list of all files and folders in the folder
-    paths = pathlib.Path(folderName)
+    index = {}                                  # Create an empty dictionary
+    paths = pathlib.Path(folderName)            # Get a list of all files and folders in the folder
+    filecount = 0                              # Initialize filecount to 0
 
-    # Loop over all files and folders
-    for path in paths.iterdir():
-        # Check if path is a file or a folder
-        if path.is_file():
-            # If path is a file, turn HTML into readable text and call tokenize function
-            with open(path, "r", errors ='ignore') as file:
+    for path in paths.iterdir():                # Loop over all files and folders
+        if path.is_file():                      # Check if path is a file or a folder 
+            filecount += 1                      # If path is a file, increment filecount
+            with open(path, "r", errors ='ignore') as file:  # If path is a file, turn HTML into readable text and call tokenize function
                 readable = bs(file, "lxml").get_text()
                 tokens = tokenize(readable)
-            # For each token in the tokens dictionary returned by tokenize
-                for token in tokens:
+
+                for token in tokens:           # For each token in the tokens dictionary returned by tokenize
                     current_post = Posting.Posting(path.name, tokens[token]) # Create a posting with the document ID and term frequency
-                    # If token is not in index
-                    if token not in index:
-                        # Add token to index
+                    if token not in index:     # If token is not in index, add token to index
                         index[token] = [current_post]
-                    # If token is in index
-                    else:
-                        # Add posting to postings list of token in index
+                    else:                     # If token is in index, add posting to postings list of token in index
                         index[token].append(current_post)
                 writeIndex(path, index)
 
         # If path is a folder, recursively call buildIndex
         else:
-            buildIndex(path)
+            filecount += buildIndex(path)
 
+    # Return overall filecount
+    return filecount
+
+# Write a method that writes an inverted index to a json file
 def writeIndex(path, index):
     with open ("data/index.json", "r") as file:
         if file.read(1):
@@ -87,7 +84,7 @@ def writeIndex(path, index):
 
             json.dump(data, file, indent=4)
 '''        
-        
+
 
 
 # Tokenize function that takes a file path as input and returns
@@ -173,11 +170,14 @@ def buildIndexJSON(folderName):
 
 # Make calls to build inverted index, and dump data into a json file
 if __name__ == "__main__":
-    # Create empty json files for each letter
-    #for i in range(0, 26):
-    #    with open("data/" + chr(ord('a') + i) + ".json", "w") as file:
-    #        json.dump({}, file, indent=4)
+    # Create an empty json file
     with open("data/index.json", "w") as file:
         json.dump({}, file, indent=4)
 
     buildIndex("/Users/jerrychen/Desktop/UCI/Spring23/INF141/Assignment3/DEV")
+
+    # Count the number of unique tokens in the index by reading the json file
+    with open("data/index.json", "r") as file:
+        data = json.load(file)
+        print(len(data))
+    
