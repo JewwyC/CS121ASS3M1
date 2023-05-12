@@ -41,20 +41,22 @@ def buildIndex(folderName):
 
         # If path is a folder, recursively call buildIndex
         else:
-            index = mergeIndex(index, buildIndex(path))
+            buildIndex(path)
 
-    # Return index  
-    return index
 
 # Write a method that writes an inverted index to multiple
 # json files based on the first letter of the token. 
+
 def writeIndex(path, index):
     # Sort the tokens alphabetically
     sorted_index = sorted(index.items(), key=lambda x: x[0])
 
     # Dump the data into json files based on the first letter of the token
     for i in range(0, 26):
-        with open(chr(ord('a') + i) + ".json", "w") as file:
+        # turn posting object into json
+        #for j in range(0, len(sorted_index[i][1])):
+        #    sorted_index[i][1][j] = sorted_index[i][1][j].toJSON()
+        with open("data/" + chr(ord('a') + i) + ".json", "w") as file:
             json.dump(sorted_index[i], file)
 
     # Return index  
