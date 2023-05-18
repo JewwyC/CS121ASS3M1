@@ -12,12 +12,12 @@ CHUNK_SIZE = 100 * 1024 * 1024  # 100MB
 # Return the number of files indexed.
 def buildIndex(folderName):
     paths = pathlib.Path(folderName)
-    index = {}
     filecount = 0
     chunkcount = 0
 
     for path in paths.iterdir():
         if path.is_file():
+            index = {}
             filecount += 1
             with open(path, "r", errors='ignore') as file:
                 while True:
