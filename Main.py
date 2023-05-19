@@ -29,7 +29,8 @@ def buildIndex(folderName):
                     tokens = tokenize(readable)
 
                     for token in tokens:
-                        current_post = Posting.Posting(path.name, tokens[token])
+                        # 
+                        current_post = Posting.Posting(path.name, tokens[token]/len(tokens))
                         if token not in index:
                             index[token] = [current_post]
                         else:
