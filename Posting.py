@@ -6,7 +6,7 @@ import json
 # be converted to JSON.
 class Posting(dict):
     def __init__(self, docID, termFreq):
-        dict.__init__(self, docID=str(docID), termFreq=str(termFreq))
+        dict.__init__(self, docID=str(docID), termFreq=termFreq)
 
     def getDocID(self):
         return self.docID
